@@ -1,0 +1,357 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-primary-soft: var(--primary-soft);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+/*
+ * Liquid Glass design system — primary #7700FF
+ * Small radii: buttons 5px, cards 7px, dialogs 8px
+ */
+:root {
+  --radius: 0.4375rem;
+  --background: #f7f5fc;
+  --foreground: #191525;
+  --card: #ffffff;
+  --card-foreground: #191525;
+  --popover: #ffffff;
+  --popover-foreground: #191525;
+  --primary: #7700ff;
+  --primary-foreground: #ffffff;
+  --primary-hover: #6200d9;
+  --primary-soft: #f1e8ff;
+  --secondary: #f3effb;
+  --secondary-foreground: #2c2440;
+  --muted: #f3effb;
+  --muted-foreground: #716a80;
+  --accent: #f1e8ff;
+  --accent-foreground: #4d0d99;
+  --destructive: #c62845;
+  --success: #16845b;
+  --warning: #b86b00;
+  --border: #e8e2f2;
+  --input: #ddd5ec;
+  --ring: #7700ff;
+  --chart-1: #7700ff;
+  --chart-2: #a45cff;
+  --chart-3: #16845b;
+  --chart-4: #b86b00;
+  --chart-5: #c62845;
+  --glass-background: rgba(255, 255, 255, 0.68);
+  --glass-border: rgba(255, 255, 255, 0.8);
+  --sidebar: #faf8fe;
+  --sidebar-foreground: #191525;
+  --sidebar-primary: #7700ff;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f1e8ff;
+  --sidebar-accent-foreground: #4d0d99;
+  --sidebar-border: #e8e2f2;
+  --sidebar-ring: #7700ff;
+}
+
+.dark {
+  --background: #14101f;
+  --foreground: #f2effa;
+  --card: #1c1729;
+  --card-foreground: #f2effa;
+  --popover: #1c1729;
+  --popover-foreground: #f2effa;
+  --primary: #9b4dff;
+  --primary-foreground: #ffffff;
+  --primary-hover: #8a33ff;
+  --primary-soft: #2b1a4d;
+  --secondary: #251e38;
+  --secondary-foreground: #e5defa;
+  --muted: #251e38;
+  --muted-foreground: #a49cbd;
+  --accent: #2b1a4d;
+  --accent-foreground: #d9c2ff;
+  --destructive: #ff5c78;
+  --success: #2fbf87;
+  --warning: #e8a03e;
+  --border: rgba(255, 255, 255, 0.1);
+  --input: rgba(255, 255, 255, 0.15);
+  --ring: #9b4dff;
+  --glass-background: rgba(28, 23, 41, 0.66);
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --sidebar: #181326;
+  --sidebar-foreground: #f2effa;
+  --sidebar-primary: #9b4dff;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #2b1a4d;
+  --sidebar-accent-foreground: #d9c2ff;
+  --sidebar-border: rgba(255, 255, 255, 0.08);
+  --sidebar-ring: #9b4dff;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* ---------- Solid, calm surfaces (plain & glitch-free) ---------- */
+.glass {
+  background: var(--card);
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 2px rgba(38, 19, 69, 0.04), 0 6px 18px rgba(38, 19, 69, 0.05);
+}
+.dark .glass {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25), 0 6px 18px rgba(0, 0, 0, 0.25);
+}
+
+.glass-nav {
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+}
+
+.glass-soft {
+  background: var(--secondary);
+  border: 1px solid var(--border);
+}
+
+/* Very quiet ambient wash behind public pages (static, single layer) */
+.aurora {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(to bottom, rgba(119, 0, 255, 0.045), transparent 26rem);
+}
+.dark .aurora {
+  background: linear-gradient(to bottom, rgba(155, 77, 255, 0.06), transparent 26rem);
+}
+
+/* Subtle ambient glow behind dashboard content (static, single layer) */
+.dashboard-aurora {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(to bottom, rgba(119, 0, 255, 0.035), transparent 24rem);
+}
+.dark .dashboard-aurora {
+  background: linear-gradient(to bottom, rgba(155, 77, 255, 0.05), transparent 24rem);
+}
+
+.text-gradient {
+  background: linear-gradient(100deg, #7700ff 10%, #a45cff 60%, #6200d9 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.primary-button {
+  background: var(--primary);
+  color: #fff;
+  border-radius: calc(var(--radius) - 2px);
+  transition: background 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+}
+.primary-button:hover {
+  background: var(--primary-hover);
+}
+
+/* ---------- Scrollbars ---------- */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(119, 0, 255, 0.25) transparent;
+}
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(119, 0, 255, 0.22);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(119, 0, 255, 0.4);
+}
+
+/* ---------- Video player ---------- */
+.player-shell video::-webkit-media-text-track-container {
+  font-size: 0.9em;
+}
+.player-shell video::cue {
+  background: rgba(20, 16, 31, 0.75);
+  color: #fff;
+  border-radius: 4px;
+}
+
+input[type="range"].player-range {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  border-radius: 999px;
+  outline: none;
+  cursor: pointer;
+}
+input[type="range"].player-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 13px;
+  height: 13px;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+}
+
+/* Focus visibility */
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* ---------- Magic UI motion utilities (plain CSS — no @theme needed) ---------- */
+.animate-marquee {
+  animation: marquee var(--duration, 40s) linear infinite;
+}
+.animate-marquee-vertical {
+  animation: marquee-vertical var(--duration, 40s) linear infinite;
+}
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+.animate-gradient-x {
+  animation: gradient-x 6s linear infinite;
+}
+.animate-orbit {
+  animation: orbit-spin var(--duration, 24s) linear infinite;
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(calc(-100% - var(--gap, 1rem))); }
+}
+@keyframes marquee-vertical {
+  from { transform: translateY(0); }
+  to { transform: translateY(calc(-100% - var(--gap, 1rem))); }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+@keyframes gradient-x {
+  0% { background-position: 0% center; }
+  100% { background-position: 200% center; }
+}
+@keyframes shimmer-sweep {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+@keyframes meteor-fall {
+  0% { transform: translateY(-8vh) rotate(215deg); opacity: 0; }
+  8% { opacity: 1; }
+  92% { opacity: 1; }
+  100% { transform: translateY(108vh) rotate(215deg); opacity: 0; }
+}
+@keyframes orbit-spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes border-beam-spin {
+  to { offset-distance: 100%; }
+}
+
+/* ---------- Shimmer button ---------- */
+.shimmer-button {
+  position: relative;
+  overflow: hidden;
+  background: var(--primary);
+  color: #fff;
+  box-shadow: 0 8px 24px rgba(119, 0, 255, 0.28);
+  transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+}
+.shimmer-button:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 28px rgba(119, 0, 255, 0.36);
+}
+.shimmer-sweep {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, transparent 35%, rgba(255, 255, 255, 0.4) 50%, transparent 65%);
+  background-size: 250% 100%;
+  animation: shimmer-sweep 2.8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* ---------- AnimatedThemeToggler (Magic UI) ---------- */
+/* Disable the default root cross-fade so the circular clip-path reveal
+   from the toggler button is the only visible transition. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+/* ---------- Word rotate container ---------- */
+.word-rotate-mask {
+  display: inline-flex;
+  overflow: hidden;
+  vertical-align: bottom;
+}

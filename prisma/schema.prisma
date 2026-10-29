@@ -1,0 +1,236 @@
+// Udemy-style LMS — Prisma schema (SQLite)
+// Money is stored as integer minor units (paise for INR).
+// Enum-like fields are strings (SQLite) constrained at the application layer.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String           @id @default(cuid())
+  email           String           @unique
+  name            String
+  passwordHash    String
+  role            String           @default("LEARNER") // ADMIN | LEARNER
+  preferredLocale String           @default("en")
+  status          String           @default("ACTIVE") // ACTIVE | DISABLED
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  enrollments     Enrollment[]
+  orders          Order[]
+  progress        LessonProgress[]
+}
+
+model Category {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  createdAt DateTime @default(now())
+  courses   Course[]
+}
+
+model Course {
+  id               String       @id @default(cuid())
+  title            String
+  slug             String       @unique
+  shortDescription String
+  description      String       @default("")
+  thumbnailUrl     String       @default("")
+  priceAmount      Int          @default(0) // paise
+  compareAtPrice   Int?
+  currency         String       @default("INR")
+  isFree           Boolean      @default(false)
+  status           String       @default("DRAFT") // DRAFT | PUBLISHED | ARCHIVED
+  level            String       @default("BEGINNER") // BEGINNER | INTERMEDIATE | ADVANCED | ALL_LEVELS
+  language         String       @default("en")
+  featured         Boolean      @default(false)
+  objectives       String       @default("[]") // JSON string[]
+  prerequisites    String       @default("[]")
+  targetAudience   String       @default("[]")
+  categoryId       String
+  category         Category     @relation(fields: [categoryId], references: [id])
+  sections         Section[]
+  lessons          Lesson[]
+  enrollments      Enrollment[]
+  orders           Order[]
+  publishedAt      DateTime?
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+
+  @@index([status])
+  @@index([categoryId])
+}
+
+model Section {
+  id       String   @id @default(cuid())
+  courseId String
+  course   Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  title    String
+  order    Int      @default(0)
+  lessons  Lesson[]
+
+  @@index([courseId])
+}
+
+model Lesson {
+  id                  String             @id @default(cuid())
+  sectionId           String
+  section             Section            @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  courseId            String
+  course              Course             @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  title               String
+  description         String             @default("")
+  order               Int                @default(0)
+  isPreview           Boolean            @default(false)
+  videoSourceUrl      String             @default("")
+  muxUploadId         String             @default("")
+  muxAssetId          String             @default("")
+  muxPlaybackId       String             @default("")
+  processingStatus    String             @default("NO_VIDEO") // NO_VIDEO | UPLOADING | PROCESSING | READY | FAILED
+  durationSeconds     Int                @default(0)
+  lastProcessingError String             @default("")
+  processingStartedAt DateTime?
+  updatedAt           DateTime           @default(now()) @updatedAt
+  audioTracks         LessonAudioTrack[]
+  subtitles           LessonSubtitle[]
+  progress            LessonProgress[]
+
+  @@index([sectionId])
+  @@index([courseId])
+  @@index([processingStatus])
+}
+
+model LessonAudioTrack {
+  id           String  @id @default(cuid())
+  lessonId     String
+  lesson       Lesson  @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  languageCode String // en | hi | ta | te ...
+  displayName  String
+  muxTrackId   String  @default("")
+  isPrimary    Boolean @default(false)
+  status       String  @default("READY") // PROCESSING | READY | FAILED
+  srcUrl       String  @default("") // demo-mode alternate audio source
+
+  @@unique([lessonId, languageCode])
+  @@index([lessonId])
+}
+
+model LessonSubtitle {
+  id           String @id @default(cuid())
+  lessonId     String
+  lesson       Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  languageCode String
+  displayName  String
+  muxTrackId   String @default("")
+  status       String @default("READY")
+  srcUrl       String @default("")
+
+  @@unique([lessonId, languageCode])
+  @@index([lessonId])
+}
+
+model Enrollment {
+  id             String    @id @default(cuid())
+  userId         String
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseId       String
+  course         Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  status         String    @default("ACTIVE") // ACTIVE | COMPLETED | REVOKED
+  enrolledAt     DateTime  @default(now())
+  completedAt    DateTime?
+  lastLessonId   String?
+  lastAccessedAt DateTime?
+
+  @@unique([userId, courseId])
+  @@index([courseId])
+}
+
+model LessonProgress {
+  id                  String    @id @default(cuid())
+  userId              String
+  user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lessonId            String
+  lesson              Lesson    @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  courseId            String
+  lastPositionSeconds Int       @default(0)
+  watchedSeconds      Int       @default(0)
+  completedAt         DateTime?
+  updatedAt           DateTime  @updatedAt
+
+  @@unique([userId, lessonId])
+  @@index([courseId])
+  @@index([userId])
+}
+
+model Order {
+  id                String    @id @default(cuid())
+  userId            String
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseId          String
+  course            Course    @relation(fields: [courseId], references: [id])
+  totalAmount       Int // paise
+  currency          String    @default("INR")
+  status            String    @default("PENDING") // PENDING | PAID | FAILED | CANCELLED | REFUND_PENDING | PARTIALLY_REFUNDED | REFUNDED
+  razorpayOrderId   String    @unique
+  razorpayPaymentId String?
+  createdAt         DateTime  @default(now())
+  paidAt            DateTime?
+  payments          Payment[]
+
+  @@index([userId])
+  @@index([courseId])
+  @@index([status])
+}
+
+model Payment {
+  id                String    @id @default(cuid())
+  orderId           String
+  order             Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  provider          String    @default("razorpay")
+  providerPaymentId String    @unique
+  amount            Int // paise
+  currency          String    @default("INR")
+  status            String    @default("CREATED") // CREATED | CAPTURED | FAILED | REFUNDED
+  method            String    @default("")
+  capturedAt        DateTime?
+  refunds           Refund[]
+  createdAt         DateTime  @default(now())
+
+  @@index([orderId])
+}
+
+model Refund {
+  id               String    @id @default(cuid())
+  paymentId        String
+  payment          Payment   @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  providerRefundId String    @unique
+  amount           Int
+  status           String    @default("PENDING") // PENDING | PROCESSED | FAILED
+  createdAt        DateTime  @default(now())
+  completedAt      DateTime?
+
+  @@index([paymentId])
+}
+
+model WebhookEvent {
+  id               String   @id @default(cuid())
+  provider         String // mux | razorpay
+  providerEventId  String   @unique
+  eventType        String
+  payload          String   @default("")
+  processingStatus String   @default("PROCESSED")
+  processedAt      DateTime @default(now())
+
+  @@index([provider])
+}
+
+model Setting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}
